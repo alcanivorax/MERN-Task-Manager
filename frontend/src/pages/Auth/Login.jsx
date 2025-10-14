@@ -1,4 +1,5 @@
 import React, { useContext, useState } from "react";
+import { motion } from "framer-motion";
 import AuthLayout from "../../components/layouts/AuthLayout";
 import Input from "../../components/Inputs/Input.jsx";
 import { useNavigate, Link } from "react-router-dom";
@@ -72,46 +73,84 @@ export default function Login() {
 
   return (
     <AuthLayout>
-      <div className="lg:w-[70%] h-3/4 md:h-full flex flex-col justify-center ">
-        <h3 className="text-xl font-semibold text-black">Welcome Back!</h3>
-        <p className="text-xs text-slate-700 mt-[5px] mb-6">
-          Please enter your details to Log In
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.3, duration: 0.7 }}
+        className="flex flex-col"
+      >
+        <h3 className="text-2xl font-bold text-black">Welcome Back!</h3>
+        <p className="text-sm text-slate-600 mt-2 mb-6">
+          Please enter your details to log in
         </p>
 
-        <form onSubmit={handleLogin}>
-          <Input
-            value={email}
-            onChange={({ target }) => setEmail(target.value)}
-            label="Email Address"
-            placeholder="roshan@gmail.com"
-            type="text"
-          />
-          <Input
-            value={password}
-            onChange={({ target }) => setPassword(target.value)}
-            label="Password"
-            placeholder="Min 8 Characters"
-            type="password"
-          />
+        <form onSubmit={handleLogin} className="w-full flex flex-col gap-4">
+          <motion.div
+            initial={{ x: -30, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            transition={{ delay: 0.4 }}
+          >
+            <Input
+              value={email}
+              onChange={({ target }) => setEmail(target.value)}
+              label="Email Address"
+              placeholder="roshan@gmail.com"
+              type="text"
+            />
+          </motion.div>
 
-          {error && <p className="text-red-500 text-xs pb-2.5">{error}</p>}
+          <motion.div
+            initial={{ x: 30, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            transition={{ delay: 0.6 }}
+          >
+            <Input
+              value={password}
+              onChange={({ target }) => setPassword(target.value)}
+              label="Password"
+              placeholder="Min 8 Characters"
+              type="password"
+            />
+          </motion.div>
 
-          <button
+          {error && (
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="text-red-500 text-xs"
+            >
+              {error}
+            </motion.p>
+          )}
+
+          <motion.button
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.97 }}
             type="submit"
-            className={`btn-primary ${loading ? "cursor-not-allowed" : ""}`}
+            className={`btn-primary mt-2 ${
+              loading ? "cursor-not-allowed opacity-70" : ""
+            }`}
             disabled={loading}
           >
             {loading ? "Signing in..." : "LOGIN"}
-          </button>
+          </motion.button>
 
-          <p className="text-[13px] text-slate-800 mt-3">
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.8 }}
+            className="text-sm text-slate-700 mt-4 text-center"
+          >
             Don't have an account?{" "}
-            <Link className="font-medium text-primary underline" to="/signup">
-              SignUp
+            <Link
+              className="font-medium text-primary hover:underline"
+              to="/signup"
+            >
+              Sign Up
             </Link>
-          </p>
+          </motion.p>
         </form>
-      </div>
+      </motion.div>
     </AuthLayout>
   );
 }

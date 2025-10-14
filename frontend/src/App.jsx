@@ -17,6 +17,7 @@ import ManageUsers from "./pages/Admin/ManageUsers";
 import UserDashboard from "./pages/User/UserDashboard";
 import MyTasks from "./pages/User/MyTasks";
 import ViewTaskDetails from "./pages/User/ViewTaskDetails";
+import Landing from "./pages/Landing";
 import { UserProvider, UserContext } from "./context/userContext";
 import { Toaster } from "react-hot-toast";
 
@@ -26,6 +27,7 @@ export default function App() {
       <div>
         <Router>
           <Routes>
+            <Route path="/landing" element={<Landing />}></Route>
             <Route path="/login" element={<Login />}></Route>
             <Route path="/signup" element={<SignUp />}></Route>
             {/* Profile */}
@@ -72,7 +74,7 @@ const Root = () => {
   const { user, loading } = useContext(UserContext);
   if (loading) return <Outlet />;
   if (!user) {
-    return <Navigate to="/login" />;
+    return <Navigate to="/landing" />;
   }
   return user.role === "admin" ? (
     <Navigate to="/admin/dashboard" />
