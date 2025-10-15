@@ -2,6 +2,9 @@
 export const API_PATHS = {
   AUTH: {
     REGISTER: "/api/auth/register", // Register a new user (Admin or Member)
+    VERIFY_OTP: "/api/auth/verify-otp",
+    RESEND_OTP: "/api/auth/resend-otp",
+    GET_PROFILE: "/api/auth/profile",
     LOGIN: "/api/auth/login", // Authenticate user & return JWT token
     GET_PROFILE: "/api/auth/profile", // Get logged-in user details
     UPDATE_PROFILE: "/api/auth/profile", // Get logged-in user details

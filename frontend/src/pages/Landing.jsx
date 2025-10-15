@@ -1,8 +1,33 @@
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
-import dashboardPreview from "../assets/dashboard.png"; // add your screenshot here
+import { useState, useEffect, useRef } from "react";
+import dashboardPreview1 from "../assets/dashboard.png";
+import dashboardPreview2 from "../assets/dashboard2.png";
+import dashboardPreview3 from "../assets/dashboard3.png";
+import dashboardPreview4 from "../assets/dashboard4.png";
+import dashboardPreview5 from "../assets/dashboard5.png";
+import dashboardPreview6 from "../assets/dashboard6.png";
 
 export default function Landing() {
+  const dashboardImages = [
+    dashboardPreview1,
+    dashboardPreview2,
+    dashboardPreview3,
+    dashboardPreview4,
+    dashboardPreview5,
+    dashboardPreview6,
+  ];
+  const [activeIndex, setActiveIndex] = useState(0);
+  const carouselRef = useRef(null);
+
+  // Automatically slide images every 5 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setActiveIndex((prev) => (prev + 1) % dashboardImages.length);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <div className="relative min-h-screen bg-gradient-to-br from-indigo-100 via-white to-purple-100 overflow-hidden">
       {/* Animated Background Blobs */}
@@ -66,22 +91,22 @@ export default function Landing() {
           {
             icon: "📋",
             title: "Task Management",
-            text: "Organize and track tasks effortlessly.",
+            text: "Keep all your tasks organized and never miss a deadline.",
           },
           {
             icon: "👥",
             title: "Team Collaboration",
-            text: "Work together in real-time.",
+            text: "Collaborate seamlessly with your team in real-time.",
           },
           {
             icon: "📊",
             title: "Analytics",
-            text: "Visualize progress with detailed reports.",
+            text: "Track progress and insights with clear visual reports.",
           },
           {
-            icon: "🔔",
-            title: "Notifications",
-            text: "Stay updated on what matters.",
+            icon: "⚡",
+            title: "Quick Access",
+            text: "Easily access tasks, projects, and important info in a flash.",
           },
         ].map((f, i) => (
           <motion.div
@@ -101,17 +126,37 @@ export default function Landing() {
         ))}
       </section>
 
-      {/* Dashboard Preview */}
-      <section className="relative z-10 px-6 py-20 flex justify-center">
-        <motion.img
-          initial={{ opacity: 0, y: 60 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1 }}
-          viewport={{ once: true }}
-          src={dashboardPreview}
-          alt="Dashboard Preview"
-          className="rounded-2xl shadow-2xl border-4 border-white max-w-5xl"
-        />
+      {/* Dashboard Carousel Section */}
+      <section className="relative z-10 px-6 py-20 flex flex-col items-center overflow-hidden max-w-5xl mx-auto">
+        <motion.div
+          ref={carouselRef}
+          animate={{ x: `-${activeIndex * 100}%` }}
+          transition={{ type: "tween", duration: 0.8 }}
+          className="flex w-full"
+        >
+          {dashboardImages.map((img, i) => (
+            <div key={i} className="flex-shrink-0 w-full px-2">
+              <img
+                src={img}
+                alt={`Dashboard ${i + 1}`}
+                className="rounded-2xl shadow-2xl border-4 border-white w-full"
+              />
+            </div>
+          ))}
+        </motion.div>
+
+        {/* Pagination Dots */}
+        <div className="flex gap-3 mt-6">
+          {dashboardImages.map((_, i) => (
+            <div
+              key={i}
+              className={`w-3 h-3 rounded-full cursor-pointer ${
+                i === activeIndex ? "bg-indigo-600" : "bg-gray-300"
+              }`}
+              onClick={() => setActiveIndex(i)}
+            />
+          ))}
+        </div>
       </section>
 
       {/* Footer CTA */}

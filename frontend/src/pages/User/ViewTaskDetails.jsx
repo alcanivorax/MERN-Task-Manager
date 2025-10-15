@@ -65,10 +65,10 @@ const ViewTaskDetails = () => {
 
   // Handle attachment link click
   const handleLinkClick = (link) => {
-    if (!/^http?:\/\//i.test(link)) {
+    if (!/^http(s)?:\/\//i.test(link)) {
       link = "https://" + link;
     }
-    window.open(link, "_blank");
+    window.open(link, "_blank", "noopener,noreferrer");
   };
 
   useEffect(() => {
@@ -115,19 +115,19 @@ const ViewTaskDetails = () => {
                     }
                   />
                 </div>
-                <div className="col-span-6 md:col-span-4">
+                {/* <div className="col-span-6 md:col-span-4">
                   <label className="text-xs font-medium text-slate-500">
                     Assigned To
                   </label>
 
-                  {/* <AvatarGroup
+                  <AvatarGroup
                     avatars={
                       task?.assignedTo?.map((item) => item?.profileImageUrl) ||
                       []
                     }
                     maxVisible={5}
-                  /> */}
-                </div>
+                  />
+                </div> */}
               </div>
 
               <div className="grid grid-cols-12 gap-4 mt-4"></div>
@@ -199,15 +199,18 @@ const TodoCheckList = ({ text, isChecked, onChange }) => {
 
 const Attachment = ({ link, index, onClick }) => {
   return (
-    <div className="flex justify-between bg-gray-50 border border-gray-100 px-3 py-2 rounded-md mb-3 mt-2 cursor-pointer">
+    <div
+      onClick={onClick}
+      className="flex justify-between bg-gray-50 border border-gray-100 px-3 py-2 rounded-md mb-3 mt-2 cursor-pointer hover:bg-gray-100 hover:border-gray-200 transition-colors"
+    >
       <div className="flex-1 flex items-center gap-3">
         <span className="text-xs text-gray-400 font-semibold mr-2">
           {index < 9 ? `0${index + 1}` : index + 1}
         </span>
-        <p className="text-xs text-black">{link}</p>
+        <p className="text-xs text-black break-all">{link}</p>
       </div>
 
-      <LuSquareArrowOutUpRight className="text-gray-400" />
+      <LuSquareArrowOutUpRight className="text-gray-400 flex-shrink-0 ml-2" />
     </div>
   );
 };

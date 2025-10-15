@@ -4,7 +4,7 @@ import excelJS from "exceljs";
 
 export const exportTasksReport = async (req, res) => {
   try {
-    const tasks = await Task.find().populate("assignedTo", "name email");
+    const tasks = await Task.find().populate("assignedTo", "name email role");
 
     const workbook = new excelJS.Workbook();
     const worksheet = workbook.addWorksheet("Task Report");
@@ -20,9 +20,12 @@ export const exportTasksReport = async (req, res) => {
     ];
 
     tasks.forEach((task) => {
+      // Filter out admins from assignedTo
       const assignedTo = task.assignedTo
+        .filter((user) => user.role !== "admin")
         .map((user) => `${user.email}`)
         .join(", ");
+
       worksheet.addRow({
         _id: task._id,
         title: task.title,
@@ -56,10 +59,14 @@ export const exportTasksReport = async (req, res) => {
 
 export const exportUsersReport = async (req, res) => {
   try {
-    const users = await User.find().select("name email _id").lean();
+    // Exclude admins from the user list
+    const users = await User.find({ role: { $ne: "admin" } })
+      .select("name email _id")
+      .lean();
+
     const userTasks = await Task.find().populate(
       "assignedTo",
-      "name email _id"
+      "name email _id role"
     );
 
     const userTaskMap = {};
@@ -77,7 +84,8 @@ export const exportUsersReport = async (req, res) => {
     userTasks.forEach((task) => {
       if (task.assignedTo) {
         task.assignedTo.forEach((assignedUser) => {
-          if (userTaskMap[assignedUser._id]) {
+          // Only count tasks for non-admin users
+          if (assignedUser.role !== "admin" && userTaskMap[assignedUser._id]) {
             userTaskMap[assignedUser._id].taskCount += 1;
             if (task.status === "Pending") {
               userTaskMap[assignedUser._id].pendingTasks += 1;
@@ -114,7 +122,7 @@ export const exportUsersReport = async (req, res) => {
 
     res.setHeader(
       "Content-Disposition",
-      'attachment; filename="tasks_report.xlsx"'
+      'attachment; filename="users_report.xlsx"'
     );
 
     return workbook.xlsx.write(res).then(() => {

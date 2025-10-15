@@ -66,12 +66,17 @@ export default function Profile() {
     }
 
     try {
+      // Use default image if no profilePic
+      const profileImageUrl =
+        profilePic ||
+        "https://res.cloudinary.com/dxdndmdmu/image/upload/w_200,h_200,c_fill,r_max/v1760534158/profile-uploads/kfi8mfxafeoa0jsndhlq.webp";
+
       const formData = {
         name: form.fullName,
         email: form.email,
         currentPassword,
         newPassword,
-        profileImageUrl: profilePic,
+        profileImageUrl,
       };
 
       const { data } = await axiosInstance.put(
@@ -86,9 +91,10 @@ export default function Profile() {
       setProfilePic(data.profileImageUrl || null);
       setInitialProfilePic(data.profileImageUrl || null);
 
+      // Update global UserContext so dashboard sees new image
       updateUser({
         ...data,
-        token: user.token,
+        token: user.token, // keep existing token
         profileImageUrl: data.profileImageUrl,
       });
     } catch (err) {

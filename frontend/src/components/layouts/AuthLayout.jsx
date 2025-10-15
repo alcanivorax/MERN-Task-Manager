@@ -1,6 +1,6 @@
 import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useLocation } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
 export default function AuthLayout({ children }) {
   const location = useLocation();
@@ -35,7 +35,7 @@ export default function AuthLayout({ children }) {
             transition={{ delay: 0.3, duration: 0.6 }}
             className="text-5xl font-extrabold mb-4 tracking-tight"
           >
-            Task Manager
+            <Link to="/landing">Task Manager</Link>
           </motion.h1>
           <motion.p
             initial={{ opacity: 0, y: 20 }}

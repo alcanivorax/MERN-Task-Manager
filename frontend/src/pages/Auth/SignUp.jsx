@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useState } from "react";
 import { motion } from "framer-motion";
 import AuthLayout from "../../components/layouts/AuthLayout";
 import { validateEmail } from "../../utils/helper";
@@ -7,7 +7,6 @@ import Input from "../../components/Inputs/Input";
 import { API_PATHS } from "../../utils/apiPaths";
 import axiosInstance from "../../utils/axiosInstance.js";
 import { Link, useNavigate } from "react-router-dom";
-import { UserContext } from "../../context/userContext";
 
 export default function SignUp() {
   const [profilePic, setProfilePic] = useState(null);
@@ -18,14 +17,12 @@ export default function SignUp() {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  const { updateUser } = useContext(UserContext);
   const navigate = useNavigate();
+
   // Handle SignUp Form Submit
   const handleSignUp = async (e) => {
     e.preventDefault();
-    setLoading(true); // <-- Start loading
-
-    let profileImageUrl = "";
+    setLoading(true);
 
     if (!fullName) {
       setError("Please enter full name.");
@@ -44,6 +41,8 @@ export default function SignUp() {
     }
 
     setError("");
+    let profileImageUrl =
+      "https://res.cloudinary.com/dxdndmdmu/image/upload/w_200,h_200,c_fill,r_max/v1760534158/profile-uploads/kfi8mfxafeoa0jsndhlq.webp";
 
     try {
       if (profilePic) {
@@ -53,17 +52,14 @@ export default function SignUp() {
         const imgUploadsRes = await axiosInstance.post(
           "/api/upload-image",
           formData,
-          {
-            headers: {
-              "Content-Type": "multipart/form-data",
-            },
-          }
+          { headers: { "Content-Type": "multipart/form-data" } }
         );
 
-        profileImageUrl = imgUploadsRes.data.imageUrl || "";
+        profileImageUrl = imgUploadsRes.data.imageUrl || profileImageUrl;
       }
 
-      const response = await axiosInstance.post(API_PATHS.AUTH.REGISTER, {
+      // Register user (backend sends OTP email)
+      await axiosInstance.post(API_PATHS.AUTH.REGISTER, {
         name: fullName,
         email,
         password,
@@ -71,30 +67,17 @@ export default function SignUp() {
         adminInviteToken,
       });
 
-      const { token } = response.data;
-
-      if (token) {
-        localStorage.setItem("token", token);
-        const profileRes = await axiosInstance.get(API_PATHS.AUTH.GET_PROFILE);
-
-        const fullUser = { ...profileRes.data, token };
-        updateUser(fullUser);
-
-        if (fullUser.role === "admin") {
-          navigate("/admin/dashboard");
-        } else {
-          navigate("/user/dashboard");
-        }
-      }
+      // Redirect to OTP verification page
+      navigate("/verify-email", { state: { email } });
     } catch (error) {
-      if (error.response && error.response.data.message) {
+      if (error.response?.data?.message) {
         setError(error.response.data.message);
       } else {
         setError("Something went wrong, Please try again.");
       }
       console.log(error);
     } finally {
-      setLoading(false); // <-- End loading
+      setLoading(false);
     }
   };
 
@@ -133,7 +116,7 @@ export default function SignUp() {
                 value: fullName,
                 onChange: (e) => setFullName(e.target.value),
                 label: "Full Name",
-                placeholder: "Roshan",
+                placeholder: "name",
                 type: "text",
                 dir: -20,
               },
@@ -141,7 +124,7 @@ export default function SignUp() {
                 value: email,
                 onChange: (e) => setEmail(e.target.value),
                 label: "Email Address",
-                placeholder: "roshan@gmail.com",
+                placeholder: "abc@gmail.com",
                 type: "text",
                 dir: 20,
               },
@@ -158,7 +141,7 @@ export default function SignUp() {
                 onChange: (e) => setAdminInviteToken(e.target.value),
                 label: "Admin Invite Token",
                 placeholder: "6 Digit code",
-                type: "text",
+                type: "password",
                 dir: 20,
               },
             ].map((field, i) => (
